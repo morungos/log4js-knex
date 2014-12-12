@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A Knex.js backend for log4js, with sqlite3/mysql support",
   "keywords": [
-    "acl",
+    "log4js",
     "knex",
     "postgres",
     "mysql",
@@ -17,18 +17,11 @@
   },
   "main": "./index.js",
   "dependencies": {
-    "async": "^0.9.0",
     "knex": "^0.7.3",
-    "lodash": "^2.4.1",
-    "log4js": "^0.6.21",
-    "sqlite3": "^3.0.2"
+    "log4js": "^0.6.21"
   },
   "devDependencies": {
-    "acl": "^0.4.4",
     "chai": "^1.10.0",
-    "gulp": "^3.8.10",
-    "knex": "^0.7.3",
-    "mocha": "^2.0.1",
     "sqlite3": "^3.0.4"
   },
   "scripts": {
