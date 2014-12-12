@@ -1,5 +1,6 @@
 'use strict';
 
+var fs = require('fs');
 var log4js = require('log4js');
 var log4jsKnex = require('../lib/log4js-knex');
 
@@ -9,6 +10,12 @@ var Knex = require('knex');
 describe('log4js-knex', function () {
 
     var log4jsConfig = {table: 'log', knex: {client: 'sqlite', connection: {filename: './test.db'}}}
+
+    before(function(done) {
+        fs.unlink('./test.db', function(err) {
+            done();
+        });
+    });
 
     beforeEach(function (done) {
         log4js.clearAppenders();
@@ -33,7 +40,18 @@ describe('log4js-knex', function () {
         // Can't immediately finish the test, as database writing is asynchronous. Wait a short while for
         // promises to resolve. 
         setTimeout(function () {
-            done();
+            var knex = Knex({client: 'sqlite', connection: {filename: './test.db'}});
+            knex('log')
+                .where('data', 'Ready to log!')
+                .exec(function(err, rows) {
+                    should.not.exist(err);
+                    should.exist(rows);
+                    rows.should.be.instanceof(Array).and.have.lengthOf(1);
+                    rows[0].should.have.property('rank', 20000)
+                    rows[0].should.have.property('category', '[default]')
+                    rows[0].should.have.property('level', 'INFO')
+                    done();
+                });
         }, 100);
     });
 
@@ -41,12 +59,23 @@ describe('log4js-knex', function () {
         var knex = Knex({client: 'sqlite', connection: {filename: './test.db'}});
         var config = {table: 'log', knex: knex}
         log4js.addAppender(log4jsKnex.configure(config));
-        log4js.getLogger().info('Ready to log!');
+        log4js.getLogger().debug('Second logging call!');
 
         // Can't immediately finish the test, as database writing is asynchronous. Wait a short while for
         // promises to resolve. 
         setTimeout(function () {
-            done();
+            knex('log')
+                .orderBy('time', 'desc')
+                .exec(function(err, rows) {
+                    should.not.exist(err);
+                    should.exist(rows);
+                    rows.should.be.instanceof(Array).and.have.lengthOf(2);
+                    rows[0].should.have.property('rank', 10000)
+                    rows[0].should.have.property('category', '[default]')
+                    rows[0].should.have.property('level', 'DEBUG')
+                    rows[0].should.have.property('data', 'Second logging call!')
+                    done();
+                });
         }, 100);
     });
 });
