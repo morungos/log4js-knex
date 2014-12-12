@@ -1,0 +1,30 @@
+{
+  "name": "log4js-knex",
+  "version": "0.1.0",
+  "description": "A Knex.js backend for log4js, with sqlite3/mysql support",
+  "keywords": [
+    "log4js",
+    "knex",
+    "postgres",
+    "mysql",
+    "sqlite3"
+  ],
+  "repository": "git@github.com:log4js-knex.git",
+  "author": "Stuart Watt <stuart@morungos.com>",
+  "homepage": "https://github.com/morungos/log4js-knex",
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "main": "./index.js",
+  "dependencies": {
+    "knex": "^0.7.3",
+    "log4js": "^0.6.21"
+  },
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "sqlite3": "^3.0.4"
+  },
+  "scripts": {
+    "test": "mocha test/runner.js --reporter spec"
+  }
+}
