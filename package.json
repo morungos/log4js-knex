@@ -29,6 +29,21 @@
     "sqlite3": "^4.0.2"
   },
   "scripts": {
-    "test": "mocha test/runner.js --reporter spec"
+    "test": "jest"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/build/"
+    ],
+    "collectCoverageFrom": [
+      "lib/**/*.js"
+    ]
   }
 }
