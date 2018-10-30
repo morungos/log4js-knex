@@ -16,14 +16,16 @@
     "node": ">= 0.10.0"
   },
   "main": "./index.js",
-  "dependencies": {
-    "knex": "^0.15.2"
-  },
+  "dependencies": {},
   "peerDependencies": {
-    "log4js": "3.x"
+    "log4js": "3.x",
+    "knex": "^0.13"
   },
   "devDependencies": {
     "chai": "^1.10.0",
+    "jest": "^23.6.0",
+    "knex": "^0.15.2",
+    "log4js": "^3.0.6",
     "sqlite3": "^4.0.2"
   },
   "scripts": {
