@@ -17,12 +17,14 @@
   },
   "main": "./index.js",
   "dependencies": {
-    "knex": "^0.7.3",
-    "log4js": "^0.6.21"
+    "knex": "^0.15.2"
+  },
+  "peerDependencies": {
+    "log4js": "3.x"
   },
   "devDependencies": {
     "chai": "^1.10.0",
-    "sqlite3": "^3.0.4"
+    "sqlite3": "^4.0.2"
   },
   "scripts": {
     "test": "mocha test/runner.js --reporter spec"
