@@ -6,7 +6,7 @@ jest.mock('knex');
 describe('log4js-knex', () => {
 
   const layouts = {
-    messagePassThrough: jest.fn((data) => JSON.stringify(data))
+    messagePassThroughLayout: jest.fn((data) => JSON.stringify(data))
   };
 
   const knexConfig = {
