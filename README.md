@@ -1,8 +1,8 @@
 log4js-knex
 ===========
 
-This is a node [log4js](https://github.com/nomiddlename/log4js-node) appender that uses [knex](http://knexjs.org/)
-as a database connection interface. 
+This is a node [log4js](https://github.com/nomiddlename/log4js-node) appender that 
+uses [knex](http://knexjs.org/) as a database connection interface. 
 
 You can use it either with a set of connection values:
 
@@ -33,9 +33,9 @@ var logger = log4js.getLogger();
 logger.warn("You have been warned");
 ```
 
-The default table name is `log`, and if there's an error when writing, the appender will attempt 
-to create the table before having a second attempt at writing. This should create the table for
-you if it doesn't already exist. 
+The default table name is `log`, and if there's an error when writing, the appender 
+will attempt to create the table before having a second attempt at writing. This 
+should create the table for you if it doesn't already exist. 
 
 Author
 ------
@@ -47,7 +47,7 @@ License
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Stuart Watt
+Copyright (c) 2014-2018 Stuart Watt
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

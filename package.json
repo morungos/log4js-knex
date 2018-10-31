@@ -1,6 +1,6 @@
 {
   "name": "log4js-knex",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A Knex.js backend for log4js, with sqlite3/mysql support",
   "keywords": [
     "log4js",
@@ -9,22 +9,41 @@
     "mysql",
     "sqlite3"
   ],
-  "repository": "git@github.com:log4js-knex.git",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:morungos/log4js-knex.git"
+  },
   "author": "Stuart Watt <stuart@morungos.com>",
   "homepage": "https://github.com/morungos/log4js-knex",
-  "engines": {
-    "node": ">= 0.10.0"
-  },
-  "main": "./index.js",
-  "dependencies": {
-    "knex": "^0.7.3",
-    "log4js": "^0.6.21"
+  "license": "MIT",
+  "main": "./lib/log4js-knex",
+  "dependencies": {},
+  "peerDependencies": {
+    "log4js": "3.x",
+    "knex": "^0.13"
   },
   "devDependencies": {
-    "chai": "^1.10.0",
-    "sqlite3": "^3.0.4"
+    "jest": "^23.6.0",
+    "log4js": "^3.0.6"
   },
   "scripts": {
-    "test": "mocha test/runner.js --reporter spec"
+    "test": "jest",
+    "test-watch": "jest --watch",
+    "coverage": "jest --coverage"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/build/"
+    ],
+    "collectCoverageFrom": [
+      "lib/**/*.js"
+    ]
   }
 }
