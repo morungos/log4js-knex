@@ -9,13 +9,14 @@
     "mysql",
     "sqlite3"
   ],
-  "repository": "git@github.com:log4js-knex.git",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:morungos/log4js-knex.git"
+  },
   "author": "Stuart Watt <stuart@morungos.com>",
   "homepage": "https://github.com/morungos/log4js-knex",
-  "engines": {
-    "node": ">= 0.10.0"
-  },
-  "main": "./index.js",
+  "license": "MIT",
+  "main": "./lib/log4js-knex",
   "dependencies": {},
   "peerDependencies": {
     "log4js": "3.x",
