@@ -6,7 +6,16 @@ jest.mock('knex');
 describe('log4js-knex', () => {
 
   const layouts = {
-    messagePassThrough: {}
+    messagePassThrough: jest.fn((data) => JSON.stringify(data))
+  };
+
+  const knexConfig = {
+    knex: {
+      client: 'mysql',
+      connection: {
+        host: 'example.com'
+      }
+    }
   };
 
   it('should initialize correctly', () => {
@@ -26,14 +35,7 @@ describe('log4js-knex', () => {
       createTable: jest.fn(() => Promise.resolve())
     };
     require('knex').__setMockConnection(connection);
-    const appender = log4jsKnex.configure({
-      knex: {
-        client: 'mysql',
-        connection: {
-          host: 'example.com'
-        }
-      }
-    }, layouts);
+    const appender = log4jsKnex.configure(knexConfig, layouts);
     return appender({data: [], level: {level: "HIGH"}, logger: {category: "default"}})
       .then(() => {
         expect(insert).toBeCalledTimes(1);
@@ -51,14 +53,7 @@ describe('log4js-knex', () => {
       createTable: jest.fn(() => Promise.resolve())
     };
     require('knex').__setMockConnection(connection);
-    const appender = log4jsKnex.configure({
-      knex: {
-        client: 'mysql',
-        connection: {
-          host: 'example.com'
-        }
-      }
-    }, layouts);
+    const appender = log4jsKnex.configure(knexConfig, layouts);
     return appender({data: [], level: {level: "HIGH"}, logger: {category: "default"}})
       .then(() => {
         expect(insert).toBeCalledTimes(2);
@@ -76,14 +71,7 @@ describe('log4js-knex', () => {
       createTable: jest.fn(() => Promise.reject(new Error("Can't create table")))
     };
     require('knex').__setMockConnection(connection);
-    const appender = log4jsKnex.configure({
-      knex: {
-        client: 'mysql',
-        connection: {
-          host: 'example.com'
-        }
-      }
-    }, layouts);
+    const appender = log4jsKnex.configure(knexConfig, layouts);
     
     const result = appender({data: [], level: {level: "HIGH"}, logger: {category: "default"}})
       .then(() => {
@@ -94,4 +82,73 @@ describe('log4js-knex', () => {
     return expect(result).rejects.toThrow(/Missing table/);
   });
 
+  it('should handle a configured layout', () => {
+    const insert = jest.fn();
+    insert.mockImplementationOnce(() => Promise.resolve());
+    const handler = {insert: insert};
+    const connection = jest.fn(() => handler);
+    connection.schema = {
+      createTable: jest.fn(() => Promise.resolve())
+    };
+    require('knex').__setMockConnection(connection);
+    const modifiedLayout = jest.fn((data) => JSON.stringify(data));
+    const layoutModule = {
+      layout: jest.fn(() => modifiedLayout),
+      messagePassThrough: jest.fn((data) => JSON.stringify(data))
+    };
+    const appender = log4jsKnex.configure(Object.assign({}, knexConfig, {layout: {type: "test"}}), layoutModule);
+    return appender({data: [], level: {level: "HIGH"}, logger: {category: "default"}})
+      .then(() => {
+        expect(insert).toBeCalledTimes(1);
+        expect(connection.schema.createTable).not.toBeCalled();
+        expect(layoutModule.layout).toBeCalledWith("test", {type: "test"});
+        expect(layoutModule.messagePassThrough).not.toBeCalled();
+      });
+  });
+
+  it('should throw the original error if needed', () => {
+    const insert = jest.fn();
+    insert.mockImplementationOnce(() => Promise.reject(new Error("Unexpected error")));
+    insert.mockImplementationOnce(() => Promise.reject(new Error("Something else")));
+    const handler = {insert: insert};
+    const connection = jest.fn(() => handler);
+    connection.schema = {
+      createTable: jest.fn(() => Promise.resolve())
+    };
+    require('knex').__setMockConnection(connection);
+    const appender = log4jsKnex.configure(knexConfig, layouts);
+    const result = appender({data: [], level: {level: "HIGH"}, logger: {category: "default"}});
+
+    return expect(result).rejects.toThrow(/Unexpected error/);
+  });
+
+  it('should handle the table creation', () => {
+    const insert = jest.fn();
+    insert.mockImplementationOnce(() => Promise.reject(new Error("Missing table")));
+    insert.mockImplementationOnce(() => Promise.resolve());
+    const handler = {insert: insert};
+    const connection = jest.fn(() => handler);
+    connection.schema = {
+      createTable: jest.fn(() => Promise.resolve())
+    };
+    require('knex').__setMockConnection(connection);
+    const appender = log4jsKnex.configure(knexConfig, layouts);
+    return appender({data: [], level: {level: "HIGH"}, logger: {category: "default"}})
+      .then(() => {
+        expect(insert).toBeCalledTimes(2);
+        expect(connection.schema.createTable).toBeCalledWith('log', expect.any(Function));
+        
+        const callback = connection.schema.createTable.mock.calls[0][1];
+        expect(callback).toBeInstanceOf(Function);
+
+        const table = {};
+        table.increments = jest.fn();
+        table.timestamp = jest.fn(() => table);
+        table.string = jest.fn(() => table);
+        table.integer = jest.fn(() => table);
+        table.notNullable = jest.fn(() => table);
+
+        return callback(table);
+      })
+  });
 });
