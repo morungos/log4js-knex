@@ -4,38 +4,48 @@ log4js-knex
 This is a node [log4js](https://github.com/nomiddlename/log4js-node) appender that 
 uses [knex](http://knexjs.org/) as a database connection interface. 
 
-You can use it either with a set of connection values:
+You can use it with a standard configuration as follows:
 
 ```
 var log4js = require('log4js');
-var log4jsKnex = require('log4js-knex');
-
-log4js.addAppender(
-    log4jsKnex.appender({table: 'log', knex: {client: 'sqlite', connection: {filename: './test.db'}}})
-);
+log4js.configure({
+    appenders: {
+        database: {
+            "type": "log4js-knex",
+            "table": "log",
+            "knex": {
+                "client": "sqlite",
+                "connection": {
+                    "filename": "./log.sqlite3"
+                },
+                "useNullAsDefault": true
+            }
+        }
+    },
+    categories: { default: { appenders: ['database'], level: 'debug' } }
+})
 
 var logger = log4js.getLogger();
 logger.debug("Added debug");
 ```
 
-Or, if you have an existing `knex` connection, you can pass that directly:
+The default table name is `log`, although that can be overridden by passing the `table`
+option as shown above. The appender does not attempt to create this table.
+This is a change from previous versions, but it's more sensible for security reasons 
+to limit permissions to those needed to manage data insertion only. If you're using
+Knex.js, one extra migration is simple anyway. In Knex.js, a schema change like this 
+can be used:
 
-```
-var log4js = require('log4js');
-var log4jsKnex = require('log4js-knex');
-var knex = require('knex')(...);
+    return knex.schema.createTable(tableName, function (table) {
+      table.increments();
+      table.timestamp('time').notNullable();
+      table.string('data', 4096).notNullable();
+      table.integer('rank').notNullable();
+      table.string('level', 12).notNullable();
+      table.string('category', 64).notNullable();
+      table.index('time');
+    });
 
-log4js.addAppender(
-    log4jsKnex.appender({table: 'log', knex: knex});
-);
-
-var logger = log4js.getLogger();
-logger.warn("You have been warned");
-```
-
-The default table name is `log`, and if there's an error when writing, the appender 
-will attempt to create the table before having a second attempt at writing. This 
-should create the table for you if it doesn't already exist. 
 
 Author
 ------
