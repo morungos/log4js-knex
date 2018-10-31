@@ -66,4 +66,32 @@ describe('log4js-knex', () => {
       })
   });
 
+  it('should fail when table creation fails', () => {
+    const insert = jest.fn();
+    insert.mockImplementationOnce(() => Promise.reject(new Error("Missing table")));
+    insert.mockImplementationOnce(() => Promise.resolve());
+    const handler = {insert: insert};
+    const connection = jest.fn(() => handler);
+    connection.schema = {
+      createTable: jest.fn(() => Promise.reject(new Error("Can't create table")))
+    };
+    require('knex').__setMockConnection(connection);
+    const appender = log4jsKnex.configure({
+      knex: {
+        client: 'mysql',
+        connection: {
+          host: 'example.com'
+        }
+      }
+    }, layouts);
+    
+    const result = appender({data: [], level: {level: "HIGH"}, logger: {category: "default"}})
+      .then(() => {
+        expect(insert).toBeCalledTimes(2);
+        expect(connection.schema.createTable).toBeCalled();
+      });
+
+    return expect(result).rejects.toThrow(/Missing table/);
+  });
+
 });
