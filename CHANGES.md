@@ -2,6 +2,12 @@ Change log
 ==========
 
 
+### Version 0.2.2 - 1st November 2018
+
+ * Allow additional values as tags. See #7
+ * Use transactions to write properly. See #8
+ * Modified the expected schema to use integer times for precision. 
+
 ### Version 0.2.1 - 31th October 2018
 
  * Fixed issues in category and level logging. See #4, #5

@@ -1,6 +1,6 @@
 {
   "name": "log4js-knex",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A Knex.js backend for log4js, with sqlite3/mysql support",
   "keywords": [
     "log4js",
