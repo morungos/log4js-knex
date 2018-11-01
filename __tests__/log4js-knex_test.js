@@ -36,7 +36,7 @@ describe('log4js-knex', () => {
     };
     require('knex').__setMockConnection(connection);
     const appender = log4jsKnex.configure(knexConfig, layouts);
-    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: 1234567890})
+    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: new Date(1234567890)})
       .then(() => {
         expect(insert).toBeCalledTimes(1);
         expect(connection.schema.createTable).not.toBeCalled();
@@ -58,7 +58,7 @@ describe('log4js-knex', () => {
       messagePassThrough: jest.fn((data) => JSON.stringify(data))
     };
     const appender = log4jsKnex.configure(Object.assign({}, knexConfig, {layout: {type: "test"}}), layoutModule);
-    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: 1234567890})
+    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: new Date(1234567890)})
       .then(() => {
         expect(insert).toBeCalledTimes(1);
         expect(connection.schema.createTable).not.toBeCalled();
@@ -77,7 +77,7 @@ describe('log4js-knex', () => {
     };
     require('knex').__setMockConnection(connection);
     const appender = log4jsKnex.configure(knexConfig, layouts);
-    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: 1234567890})
+    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: new Date(1234567890)})
       .then(() => {
         expect(insert).toBeCalledTimes(1);
         expect(connection.schema.createTable).not.toBeCalled();
@@ -102,7 +102,7 @@ describe('log4js-knex', () => {
     };
     require('knex').__setMockConnection(connection);
     const appender = log4jsKnex.configure(Object.assign({}, knexConfig, {additionalFields: {tag: "aps1"}}), layouts);
-    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: 1234567890})
+    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: new Date(1234567890)})
       .then(() => {
         expect(insert).toBeCalledTimes(1);
         expect(connection.schema.createTable).not.toBeCalled();
