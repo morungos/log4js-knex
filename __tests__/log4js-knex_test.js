@@ -6,7 +6,7 @@ jest.mock('knex');
 describe('log4js-knex', () => {
 
   const layouts = {
-    messagePassThroughLayout: jest.fn((data) => JSON.stringify(data))
+    messagePassThroughLayout: jest.fn((event) => "formatted: " + JSON.stringify(event.data))
   };
 
   const knexConfig = {
@@ -87,7 +87,7 @@ describe('log4js-knex', () => {
 
         expect(insert).toBeCalledWith({
           category: "default",
-          data: "[]",
+          data: "formatted: []",
           level: "HIGH",
           rank: 1000,
           time: 1234567890
@@ -113,7 +113,7 @@ describe('log4js-knex', () => {
 
         expect(insert).toBeCalledWith({
           category: "default",
-          data: "[]",
+          data: "formatted: []",
           level: "HIGH",
           rank: 1000,
           time: 1234567890,
