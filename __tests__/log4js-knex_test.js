@@ -34,6 +34,7 @@ describe('log4js-knex', () => {
     connection.schema = {
       createTable: jest.fn(() => Promise.resolve())
     };
+    connection.transaction = (fn) => fn(connection);
     require('knex').__setMockConnection(connection);
     const appender = log4jsKnex.configure(knexConfig, layouts);
     return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: new Date(1234567890)})
@@ -51,6 +52,7 @@ describe('log4js-knex', () => {
     connection.schema = {
       createTable: jest.fn(() => Promise.resolve())
     };
+    connection.transaction = (fn) => fn(connection);
     require('knex').__setMockConnection(connection);
     const modifiedLayout = jest.fn((data) => JSON.stringify(data));
     const layoutModule = {
@@ -75,6 +77,7 @@ describe('log4js-knex', () => {
     connection.schema = {
       createTable: jest.fn(() => Promise.resolve())
     };
+    connection.transaction = (fn) => fn(connection);
     require('knex').__setMockConnection(connection);
     const appender = log4jsKnex.configure(knexConfig, layouts);
     return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: new Date(1234567890)})
@@ -100,6 +103,7 @@ describe('log4js-knex', () => {
     connection.schema = {
       createTable: jest.fn(() => Promise.resolve())
     };
+    connection.transaction = (fn) => fn(connection);
     require('knex').__setMockConnection(connection);
     const appender = log4jsKnex.configure(Object.assign({}, knexConfig, {additionalFields: {tag: "aps1"}}), layouts);
     return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: new Date(1234567890)})
