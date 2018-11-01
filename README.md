@@ -19,6 +19,9 @@ log4js.configure({
                     "filename": "./log.sqlite3"
                 },
                 "useNullAsDefault": true
+            },
+            "additionalFields": {
+                "serverName": "www.google.ca"
             }
         }
     },
@@ -38,13 +41,22 @@ can be used:
 
     return knex.schema.createTable(tableName, function (table) {
       table.increments();
-      table.timestamp('time').notNullable();
+      table.bigInteger('time').notNullable();
       table.string('data', 4096).notNullable();
       table.integer('rank').notNullable();
       table.string('level', 12).notNullable();
       table.string('category', 64).notNullable();
       table.index('time');
     });
+
+The `additionalFields` property allows you to set some fields that get merged into
+every log record as additional columns. They're handy in tracing sources. Normally
+you are unlikely to need these, however. 
+
+Note that the time is written as a big integer, rather than as a string. This is
+because we need fine grained times, and timestamps don't usually provide them. If you 
+need better timing, you can process that later, even in SQL you can usually handle that
+through a function. 
 
 
 Author

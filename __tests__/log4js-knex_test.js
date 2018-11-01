@@ -34,9 +34,10 @@ describe('log4js-knex', () => {
     connection.schema = {
       createTable: jest.fn(() => Promise.resolve())
     };
+    connection.transaction = (fn) => fn(connection);
     require('knex').__setMockConnection(connection);
     const appender = log4jsKnex.configure(knexConfig, layouts);
-    return appender({data: [], level: {level: "HIGH"}, logger: {category: "default"}})
+    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: new Date(1234567890)})
       .then(() => {
         expect(insert).toBeCalledTimes(1);
         expect(connection.schema.createTable).not.toBeCalled();
@@ -51,6 +52,7 @@ describe('log4js-knex', () => {
     connection.schema = {
       createTable: jest.fn(() => Promise.resolve())
     };
+    connection.transaction = (fn) => fn(connection);
     require('knex').__setMockConnection(connection);
     const modifiedLayout = jest.fn((data) => JSON.stringify(data));
     const layoutModule = {
@@ -58,12 +60,65 @@ describe('log4js-knex', () => {
       messagePassThrough: jest.fn((data) => JSON.stringify(data))
     };
     const appender = log4jsKnex.configure(Object.assign({}, knexConfig, {layout: {type: "test"}}), layoutModule);
-    return appender({data: [], level: {level: "HIGH"}, logger: {category: "default"}})
+    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: new Date(1234567890)})
       .then(() => {
         expect(insert).toBeCalledTimes(1);
         expect(connection.schema.createTable).not.toBeCalled();
         expect(layoutModule.layout).toBeCalledWith("test", {type: "test"});
         expect(layoutModule.messagePassThrough).not.toBeCalled();
+      });
+  });
+
+  it('should log correctly without additional columns', () => {
+    const insert = jest.fn();
+    insert.mockImplementationOnce(() => Promise.resolve());
+    const handler = {insert: insert};
+    const connection = jest.fn(() => handler);
+    connection.schema = {
+      createTable: jest.fn(() => Promise.resolve())
+    };
+    connection.transaction = (fn) => fn(connection);
+    require('knex').__setMockConnection(connection);
+    const appender = log4jsKnex.configure(knexConfig, layouts);
+    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: new Date(1234567890)})
+      .then(() => {
+        expect(insert).toBeCalledTimes(1);
+        expect(connection.schema.createTable).not.toBeCalled();
+
+        expect(insert).toBeCalledWith({
+          category: "default",
+          data: "[]",
+          level: "HIGH",
+          rank: 1000,
+          time: 1234567890
+        });
+      });
+  });
+
+  it('should log correctly with an additional column', () => {
+    const insert = jest.fn();
+    insert.mockImplementationOnce(() => Promise.resolve());
+    const handler = {insert: insert};
+    const connection = jest.fn(() => handler);
+    connection.schema = {
+      createTable: jest.fn(() => Promise.resolve())
+    };
+    connection.transaction = (fn) => fn(connection);
+    require('knex').__setMockConnection(connection);
+    const appender = log4jsKnex.configure(Object.assign({}, knexConfig, {additionalFields: {tag: "aps1"}}), layouts);
+    return appender({data: [], level: {level: 1000, levelStr: "HIGH"}, categoryName: "default", startTime: new Date(1234567890)})
+      .then(() => {
+        expect(insert).toBeCalledTimes(1);
+        expect(connection.schema.createTable).not.toBeCalled();
+
+        expect(insert).toBeCalledWith({
+          category: "default",
+          data: "[]",
+          level: "HIGH",
+          rank: 1000,
+          time: 1234567890,
+          tag: "aps1"
+        });
       });
   });
 
