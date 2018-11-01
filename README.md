@@ -19,6 +19,9 @@ log4js.configure({
                     "filename": "./log.sqlite3"
                 },
                 "useNullAsDefault": true
+            },
+            "additionalFields": {
+                "serverName": "www.google.ca"
             }
         }
     },
@@ -45,6 +48,10 @@ can be used:
       table.string('category', 64).notNullable();
       table.index('time');
     });
+
+The `additionalFields` property allows you to set some fields that get merged into
+every log record as additional columns. They're handy in tracing sources. Normally
+you are unlikely to need these, however. 
 
 
 Author
